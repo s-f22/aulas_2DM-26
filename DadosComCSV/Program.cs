@@ -1,4 +1,6 @@
-﻿
+﻿// Program => Service => Repository => Model + DB
+
+using DadosComCSV.Models;
 using DadosComCSV.Repositories;
 using DadosComCSV.Services;
 
@@ -9,8 +11,8 @@ bool executando = true;
 
 while (executando)
 {
-  // Console.Clear();
-  Console.WriteLine("======= GESTÃO DE JOGOS =======");
+  Console.Clear();
+  Console.WriteLine("\n======= GESTÃO DE JOGOS =======");
   Console.WriteLine("1 - CADASTRAR JOGO");
   Console.WriteLine("2 - LISTAR JOGOS");
   Console.WriteLine("0 - SAIR");
@@ -23,21 +25,17 @@ while (executando)
     switch (opcao)
     {
       case "1":
-        // Cadastrar();
+        Cadastrar();
         break;
       case "2":
-        var listaJogos = service.Listar();
-
-        foreach (var item in listaJogos)
-        {
-          Console.WriteLine($"Nome: {item.Nome} - Preço: {item.Preco:C}");
-        }
+        Listar();
         break;
       case "0":
         executando = false;
         break;
       default:
         Console.WriteLine("Opção inválida");
+        Pausar();
         break;
     }
   }
@@ -47,5 +45,88 @@ while (executando)
     throw;
   }
   
+}
+
+void Listar()
+{
+  Console.Clear();
+  Console.WriteLine("======== JOGOS CADASTRADOS =======");
+
+  var jogos = service.Listar();
+
+  if (jogos.Count == 0)
+  {
+    Console.WriteLine("Nenhum jogo cadastrado.");
+  }
+  else
+  {
+    foreach (var jogo in jogos)
+    {
+      ExibirJogo(jogo);
+    }
+  }
+
+  Pausar();
+}
+
+void ExibirJogo(Jogo jogo)
+{
+  Console.WriteLine($"""
+  -----------------------------------
+  ID: {jogo.Id}
+  Nome: {jogo.Nome}
+  Desenvolvedora: {jogo.Desenvolvedora}
+  Gênero: {jogo.Genero}
+  Ano: {jogo.AnoLancamento}
+  Preço: {jogo.Preco:C}
+  """);
+}
+
+void Pausar()
+{
+  Console.WriteLine("\nPressione ENTER para continuar...");
+  Console.ReadLine();
+}
+
+void Cadastrar()
+{
+  Console.Clear();
+  Console.WriteLine("======= Cadastrar Jogo =======");
+
+  var jogo = LerDadosJogo();
+
+  service.Cadastrar(jogo);
+
+  Console.WriteLine("\nJogo cadastrado com sucesso!");
+  Pausar();
+
+}
+
+Jogo LerDadosJogo()
+{
+  Console.Write("Nome: ");
+  string nome = Console.ReadLine() ?? "";
+
+  Console.Write("Desenvolvedora: ");
+  string desenvolvedora = Console.ReadLine() ?? "";
+
+  Console.Write("Gênero: ");
+  string genero = Console.ReadLine() ?? "";
+
+  Console.Write("Ano Lançamento: ");
+  int ano = int.Parse(Console.ReadLine() ?? "");
+
+  Console.Write("Preço: ");
+  decimal valor = decimal.Parse(Console.ReadLine() ?? "");
+
+  return new Jogo
+  {
+    Nome = nome,
+    Desenvolvedora = desenvolvedora,
+    Genero = genero,
+    AnoLancamento = ano,
+    Preco = valor
+  };
+
 
 }
