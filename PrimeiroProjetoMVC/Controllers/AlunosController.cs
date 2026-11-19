@@ -35,16 +35,28 @@ namespace PrimeiroProjetoMVC.Controllers
             return View(aluno);
         }
 
+        // GET /Alunos/Criar - exibir a View com todos os alunos
         [HttpGet] 
         public IActionResult Criar()
         {
             return View();
         }
 
+        // POST /Alunos/Criar - receber dados da View por meio de um formulario de Cadastro para adicionar um novo Aluno
         [HttpPost]
         public IActionResult Criar(Aluno aluno)
         {
-            
+            if (!ModelState.IsValid) // Verifica se as validações atribuidas na Model foram cumpridas
+            {
+                return View(aluno); // Retorna com erros de validação
+            }
+
+            aluno.Id = _alunos.Any() ? _alunos.Max(a => a.Id) + 1 : 1;
+
+            _alunos.Add(aluno);
+
+            return RedirectToAction("Index");
+
         }
 
         
